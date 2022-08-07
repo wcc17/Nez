@@ -19,7 +19,7 @@ namespace Nez.UI
 		/// <summary>
 		/// the button on the gamepad that activates the focused control
 		/// </summary>
-		public Buttons GamepadActionButton = Buttons.A;
+		public Buttons[] GamepadActionButtons = new Buttons[] { Buttons.A };
 
 		/// <summary>
 		/// if true (default) keyboard arrow keys and the keyboardActionKey will emulate a gamepad
@@ -437,12 +437,21 @@ namespace Nez.UI
 		{
 			if (_gamepadFocusElement != null)
 			{
-				if (Input.GamePads[0].IsButtonPressed(GamepadActionButton) ||
-					(KeyboardEmulatesGamepad && Input.IsKeyPressed(KeyboardActionKey)))
-					_gamepadFocusElement.OnActionButtonPressed();
-				else if (Input.GamePads[0].IsButtonReleased(GamepadActionButton) ||
-						 (KeyboardEmulatesGamepad && Input.IsKeyReleased(KeyboardActionKey)))
-					_gamepadFocusElement.OnActionButtonReleased();
+				foreach (var actionButton in GamepadActionButtons)
+				{
+					if (Input.GamePads[0].IsButtonPressed(actionButton) ||
+						(KeyboardEmulatesGamepad && Input.IsKeyPressed(KeyboardActionKey)))
+					{
+						_gamepadFocusElement.OnActionButtonPressed();
+						break;
+					}
+					else if (Input.GamePads[0].IsButtonReleased(actionButton) ||
+							 (KeyboardEmulatesGamepad && Input.IsKeyReleased(KeyboardActionKey)))
+					{
+						_gamepadFocusElement.OnActionButtonReleased();
+						break;
+					}
+				}
 			}
 
 			IGamepadFocusable nextElement = null;
